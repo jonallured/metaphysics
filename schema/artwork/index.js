@@ -39,8 +39,6 @@ import {
   GraphQLInt,
 } from 'graphql';
 
-let Artwork;
-
 const ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   interfaces: [NodeInterface],
@@ -449,7 +447,7 @@ const ArtworkType = new GraphQLObjectType({
           },
         },
         resolve: ({ _id }, { size }) =>
-          gravity('related/artworks', { artwork_id: _id, size }),
+          gravity('related/artworks', { artwork_id: _id, size: size })
       },
       layer: {
         type: ArtworkLayer.type,
@@ -472,7 +470,7 @@ const ArtworkType = new GraphQLObjectType({
   },
 });
 
-Artwork = {
+const Artwork = {
   type: ArtworkType,
   description: 'An Artwork',
   args: {
