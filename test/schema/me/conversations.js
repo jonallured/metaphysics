@@ -1,6 +1,40 @@
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
+  describe("has_conversations", () => {
+    it("it returns false when there are no conversations", () => {
+      const query = `
+        {
+          me {
+            has_conversations
+          }
+        }
+      `
+
+      return runAuthenticatedQuery(query, {
+        conversationsLoader: () => Promise.resolve({ conversations: [] }),
+      }).then(({ me: { has_conversations } }) => {
+        expect(has_conversations).toEqual(false)
+      })
+    })
+
+    it("it returns true when there are conversations", () => {
+      const query = `
+        {
+          me {
+            has_conversations
+          }
+        }
+      `
+
+      return runAuthenticatedQuery(query, {
+        conversationsLoader: () => Promise.resolve({ conversations: [{}] }),
+      }).then(({ me: { has_conversations } }) => {
+        expect(has_conversations).toEqual(true)
+      })
+    })
+  })
+
   describe("Conversations", () => {
     it("returns conversations", () => {
       const query = `

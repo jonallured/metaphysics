@@ -18,7 +18,7 @@ import ArtworkInquiries from "./artwork_inquiries"
 import SavedArtworks from "./saved_artworks"
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLBoolean } from "graphql"
 import { has } from "lodash"
 
 const Me = new GraphQLObjectType({
@@ -40,6 +40,15 @@ const Me = new GraphQLObjectType({
     },
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
+    has_conversations: {
+      type: GraphQLBoolean,
+      resolve: (root, options, request, { rootValue: { conversationsLoader } }) => {
+        // idk if passing options here is correct
+        conversationsLoader(options).then(({ conversations }) => {
+          return conversations.length > 0
+        })
+      },
+    },
     lot_standing: LotStanding,
     lot_standings: LotStandings,
     name: {
@@ -81,6 +90,7 @@ export default {
       "collector_profile",
       "artwork_inquiries_connection",
       "notifications_connection",
+      "has_conversations",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity.with(accessToken)("me").catch(() => null)
