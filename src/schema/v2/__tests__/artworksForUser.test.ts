@@ -1,4 +1,4 @@
-import { getArtistAffinities } from "../artworksForUser"
+import { getAffinityArtworks, getArtistAffinities } from "../artworksForUser"
 
 const mockLoaderFactory = (affinities) => {
   const edges = affinities.map((affinity) => {
@@ -35,5 +35,37 @@ describe("getArtistAffinities", () => {
     const artistIds = await getArtistAffinities({}, context)
 
     expect(artistIds).toEqual(["warhol"])
+  })
+})
+
+describe("getAffinityArtworks", () => {
+  it("returns an empty array without artist ids", async () => {
+    const artistIds = undefined
+    const gravityArgs = {}
+    const context = {} as any
+
+    const artworks = await getAffinityArtworks(gravityArgs, context, artistIds)
+    expect(artworks).toEqual([])
+  })
+
+  it("returns an empty array with empty artist ids", async () => {
+    const artistIds = []
+    const gravityArgs = {}
+    const context = {} as any
+
+    const artworks = await getAffinityArtworks(gravityArgs, context, artistIds)
+    expect(artworks).toEqual([])
+  })
+
+  it("returns recently published artworks for those artist ids", async () => {
+    const artistIds = ["banksy"]
+    const gravityArgs = {}
+    const mockArtworksLoader = jest.fn(() => [{}])
+    const context = {
+      artworksLoader: mockArtworksLoader,
+    } as any
+
+    const artworks = await getAffinityArtworks(gravityArgs, context, artistIds)
+    expect(artworks.length).toEqual(1)
   })
 })
