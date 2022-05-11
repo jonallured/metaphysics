@@ -1,4 +1,9 @@
-import { GraphQLString, GraphQLFieldConfig, GraphQLInt } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLString,
+} from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
@@ -48,11 +53,10 @@ export const getArtistAffinities = async (
 }
 
 export const getAffinityArtworks = async (
+  artistIds: string[],
   gravityArgs,
-  context: ResolverContext,
-  artistIds?: string[]
-): Promise<string[]> => {
-  if (artistIds === undefined) return []
+  context: ResolverContext
+): Promise<any[]> => {
   if (artistIds.length === 0) return []
 
   const { size, offset } = gravityArgs
@@ -71,24 +75,58 @@ export const getAffinityArtworks = async (
   return body
 }
 
+export const getBackfillArtworks = async (
+  affinityArtworks,
+  args: CursorPageable,
+  context: ResolverContext
+): Promise<any[]> => {
+  if (!args.includeBackfill) return []
+
+  const remainingSize = args.size - affinityArtworks.length
+  if (remainingSize < 1) return []
+
+  const { artworksLoader, setItemsLoader } = context
+
+  // need to find the right identifier for this one
+  const backfillArtworkIds = await setItemsLoader("foo")
+  const artworkParams = {
+    ids: backfillArtworkIds,
+  }
+  const body = await artworksLoader(artworkParams)
+
+  return body.slice(0, remainingSize)
+}
+
 export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of artworks for a user.",
   type: artworkConnection.connectionType,
   args: pageable({
+    // how do i make this not null with a false default?
+    includeBackfill: { type: GraphQLBoolean },
     page: { type: GraphQLInt },
     userId: { type: GraphQLString },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
-    const { artworksLoader } = context
-
-    if (!artworksLoader) return
+    if (!context.artworksLoader) return
 
     const artistIds = await getArtistAffinities(args, context)
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
 
-    const artworks = await getAffinityArtworks(gravityArgs, context, artistIds)
+    const affinityArtworks = await getAffinityArtworks(
+      artistIds,
+      gravityArgs,
+      context
+    )
+
+    const backfillArtworks = await getBackfillArtworks(
+      affinityArtworks,
+      args,
+      context
+    )
+
+    const artworks = [...affinityArtworks, ...backfillArtworks]
 
     // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
