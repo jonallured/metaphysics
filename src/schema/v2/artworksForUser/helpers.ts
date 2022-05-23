@@ -65,6 +65,62 @@ export const getAffinityArtworks = async (
   return body
 }
 
+export const getNewForYouRecs = async (
+  args: CursorPageable,
+  context: ResolverContext
+): Promise<string[]> => {
+  const { appToken, vortexGraphqlLoader, vortexGraphqlLoaderFactory } = context
+
+  const graphqlLoader =
+    vortexGraphqlLoader || vortexGraphqlLoaderFactory(appToken)
+
+  const vortexResult = await graphqlLoader({
+    query: gql`
+        query newForYouRecommendationsQuery {
+          newForYouRecommendations(
+            first: ${args.first}
+            userId: "${args.userId}"
+          ) {
+            totalCount
+            edges {
+              node {
+                artworkId
+              }
+            }
+          }
+        }
+      `,
+  })()
+
+  const artworkIds = extractNodes(vortexResult.data?.artistAffinities).map(
+    (node: any) => node?.artworkId
+  )
+
+  return artworkIds
+}
+
+export const getNewForYouArtworks = async (
+  artworkIds: string[],
+  gravityArgs,
+  context: ResolverContext
+): Promise<any[]> => {
+  if (artworkIds.length === 0) return []
+
+  const { size, offset } = gravityArgs
+  const { artworksLoader } = context
+
+  const artworkParams = {
+    artwork_ids: artworkIds,
+    availability: "for sale",
+    offset,
+    size,
+  }
+
+  const body = await artworksLoader(artworkParams)
+
+  return body
+}
+
 export const getBackfillArtworks = async (
   remainingSize: number,
   includeBackfill: boolean,
