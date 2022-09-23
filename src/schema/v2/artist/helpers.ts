@@ -88,7 +88,7 @@ export const getArtistInsights = (artist) =>
             type: kind,
             kind,
             description,
-            count: value ? 1 : 0,
+            count: 1,
             artist,
           }
       }
