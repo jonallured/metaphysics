@@ -62,33 +62,27 @@ export const getArtistInsights = (artist) =>
         return { artist }
       }
 
-      switch (typeof value) {
-        case "string":
-          const trimmed = value.trim()
+      const insight = {
+        artist,
+        count: 1,
+        entities: [],
+        description,
+        kind,
+        label,
+        type: kind,
+      } as any
 
-          const entities = trimmed
-            .split(delimiter ?? "|")
-            .map((entity) => entity.trim())
-          return {
-            artist,
-            count: entities.length,
-            description,
-            entities,
-            kind,
-            label,
-            type: kind,
-          }
+      if (typeof value === "string") {
+        const trimmed = value.trim()
 
-        case "boolean":
-          return {
-            artist,
-            count: 1,
-            description,
-            entities: [],
-            kind,
-            label,
-            type: kind,
-          }
+        const entities = trimmed
+          .split(delimiter ?? "|")
+          .map((entity) => entity.trim())
+
+        insight.count = entities.length
+        insight.entities = entities
       }
+
+      return insight
     })
   )
