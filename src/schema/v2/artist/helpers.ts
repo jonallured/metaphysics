@@ -65,7 +65,7 @@ export const getArtistInsights = (artist) => {
 
     const insight = {
       artist,
-      count: 1,
+      count: 0,
       entities: [],
       description,
       kind,
