@@ -1,14 +1,10 @@
-import { ARTIST_INSIGHT_MAPPING, getArtistInsights } from "../helpers"
+import { getArtistInsights } from "../helpers"
 
 describe("getArtistInsights", () => {
-  it("returns artist objects with no other information for each insight kind", () => {
+  it("returns an empty array when there are no insights", () => {
     const artist = {}
     const insights = getArtistInsights(artist)
-    const mappingLength = Object.entries(ARTIST_INSIGHT_MAPPING).length
-    expect(insights.length).toEqual(mappingLength)
-    insights.forEach((insight) => {
-      expect(insight).toMatchObject({ artist })
-    })
+    expect(insights).toEqual([])
   })
 
   describe("pipe delimited insight fields", () => {

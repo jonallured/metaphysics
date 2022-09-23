@@ -61,9 +61,7 @@ export const getArtistInsights = (artist) => {
 
     const value = artist[fieldName]
 
-    if (!value) {
-      return { artist }
-    }
+    if (!value) return null
 
     const insight = {
       artist,
