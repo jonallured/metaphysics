@@ -70,24 +70,24 @@ export const getArtistInsights = (artist) =>
             .split(delimiter ?? "|")
             .map((entity) => entity.trim())
           return {
-            entities,
+            artist,
             count: entities.length,
+            description,
+            entities,
+            kind,
             label,
             type: kind,
-            kind,
-            description,
-            artist,
           }
 
         case "boolean":
           return {
+            artist,
+            count: 1,
+            description,
             entities: [],
+            kind,
             label,
             type: kind,
-            kind,
-            description,
-            count: 1,
-            artist,
           }
       }
     })
