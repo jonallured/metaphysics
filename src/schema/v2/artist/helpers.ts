@@ -74,7 +74,7 @@ export const getArtistInsights = (artist) => {
 
     const entities = getEntities(value, delimiter ?? "|")
 
-    const insight = {
+    return {
       artist,
       count: entities.length,
       entities,
@@ -82,9 +82,7 @@ export const getArtistInsights = (artist) => {
       kind,
       label,
       type: kind,
-    } as any
-
-    return insight
+    }
   })
 
   return compact(insights)
