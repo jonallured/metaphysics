@@ -66,8 +66,10 @@ export const getArtistInsights = (artist) => {
     let entities: string[] = []
 
     if (typeof value === "string") {
-      const trimmed = value.trim()
-      entities = trimmed.split(delimiter ?? "|").map((entity) => entity.trim())
+      entities = value
+        .trim()
+        .split(delimiter ?? "|")
+        .map((entity) => entity.trim())
     }
 
     const insight = {
