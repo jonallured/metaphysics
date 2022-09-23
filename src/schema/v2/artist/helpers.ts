@@ -50,6 +50,15 @@ export const ARTIST_INSIGHT_MAPPING = {
   },
 } as const
 
+const getEntities = (value, delimiter) => {
+  if (typeof value !== "string") return []
+
+  return value
+    .trim()
+    .split(delimiter)
+    .map((entity) => entity.trim())
+}
+
 export const getArtistInsights = (artist) => {
   const mappings = Object.entries(ARTIST_INSIGHT_MAPPING) as [
     ArtistInsightKind,
@@ -63,14 +72,7 @@ export const getArtistInsights = (artist) => {
 
     if (!value) return null
 
-    let entities: string[] = []
-
-    if (typeof value === "string") {
-      entities = value
-        .trim()
-        .split(delimiter ?? "|")
-        .map((entity) => entity.trim())
-    }
+    const entities = getEntities(value, delimiter ?? "|")
 
     const insight = {
       artist,
