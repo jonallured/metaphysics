@@ -66,8 +66,6 @@ export const getArtistInsights = (artist) =>
         case "string":
           const trimmed = value.trim()
 
-          if (!trimmed) return null
-
           const entities = trimmed
             .split(delimiter ?? "|")
             .map((entity) => entity.trim())
