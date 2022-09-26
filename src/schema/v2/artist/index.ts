@@ -64,7 +64,7 @@ import { ArtistTargetSupply } from "./targetSupply"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
-const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
+export const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
 
 export const artistArtworkArrayLength = (artist, filter) => {
