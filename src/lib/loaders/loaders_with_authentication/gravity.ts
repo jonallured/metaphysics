@@ -1266,6 +1266,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerLoader: gravityLoader(
+      (id) => `partner/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     updateSaleAgreementLoader: gravityLoader(
       (id) => `sale_agreements/${id}`,
       {},
